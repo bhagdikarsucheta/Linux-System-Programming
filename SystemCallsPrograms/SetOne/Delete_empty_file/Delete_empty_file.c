@@ -1,0 +1,38 @@
+#include<stdio.h>
+#include<fcntl.h>
+#include<dirent.h>
+#include<sys/stat.h>
+
+int main(int argc, char *argv[])
+{
+  DIR *dir;
+
+  dir= opendir(argv[1]);
+  struct stat filestat; 
+  struct dirent *obj; 
+  char name[100];
+
+  if(dir == NULL)
+  {
+	printf("\nerror opening directory\n");
+	return -1;
+  } 
+
+  while((obj = readdir(dir)) !=NULL)
+  {
+     sprintf(name,"%s/%s",argv[1],obj->d_name);
+
+     stat(name,&filestat);
+
+    if(S_ISREG(filestat.st_mode))
+    {
+	if((int)filestat.st_size == 0)
+	{
+  		remove(name);
+	}
+    }
+  }
+
+  closedir(dir);
+  return 0; 
+}
